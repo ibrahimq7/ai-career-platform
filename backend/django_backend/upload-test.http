@@ -1,0 +1,15 @@
+
+### Upload Resume
+POST http://localhost:8000/api/resume/upload/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ5MDUzNzUyLCJpYXQiOjE3NDkwNTM0NTIsImp0aSI6ImE3NjE1OGQ0ZTI3NTRmODBhYjc1ZmY1MGFiZmUxZTRhIiwidXNlcl9pZCI6MX0.rdKfjA264Q6cRm8z2NtVG5yeHMB06_TgOjWt7NGF-4U
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="resume"; filename="sample.pdf"
+Content-Type: application/pdf
+
+< ./sample.pdf
+--boundary123--
+
+
+
