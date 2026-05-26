@@ -8,11 +8,11 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center text-sm">
           <div className="flex items-center mb-4 md:mb-0">
             <Link to="/" className="flex items-center">
-              <span className="text-lg font-bold text-blue-600 dark:text-blue-400">Career</span>
-              <span className="text-lg font-bold text-teal-600 dark:text-teal-400">Boost</span>
+              <span className="text-lg font-bold text-blue-600 dark:text-blue-400">AI Career</span>
+              <span className="text-lg font-bold text-teal-600 dark:text-teal-400">Platform</span>
             </Link>
             <span className="ml-4 text-gray-500 dark:text-gray-400">
-              © {new Date().getFullYear()} CareerBoost. All rights reserved.
+              © {new Date().getFullYear()} AI Career Platform. All rights reserved.
             </span>
           </div>
           <div className="flex space-x-8">
@@ -32,7 +32,7 @@ const Footer = () => {
           <div className="mt-4 md:mt-0 flex items-center">
             <span className="text-gray-500 dark:text-gray-400">Made with</span>
             <Heart size={16} className="mx-1 text-red-500" fill="currentColor" />
-            <span className="text-gray-500 dark:text-gray-400">by the CareerBoost Team</span>
+            <span className="text-gray-500 dark:text-gray-400">by the AI Career Platform Team</span>
           </div>
         </div>
       </div>

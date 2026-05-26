@@ -8,13 +8,13 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Check if user prefers dark mode
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const [isDark, setIsDark] = useState<boolean>(
     localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && prefersDark)
   );
 
   useEffect(() => {
+    document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
     if (isDark) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
@@ -25,7 +25,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [isDark]);
 
   const toggleTheme = () => {
-    setIsDark(!isDark);
+    setIsDark((current) => !current);
   };
 
   return (

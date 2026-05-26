@@ -1,4 +1,4 @@
-import { Zap, AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Cpu, Zap } from 'lucide-react';
 
 type SkillsGapAnalysisProps = {
   currentSkills: string[];
@@ -6,7 +6,6 @@ type SkillsGapAnalysisProps = {
 };
 
 const SkillsGapAnalysis = ({ currentSkills, missingSkills }: SkillsGapAnalysisProps) => {
-  // Generate job roles based on current skills
   const getRelevantJobRoles = () => {
     const roles = [];
     
@@ -39,20 +38,24 @@ const SkillsGapAnalysis = ({ currentSkills, missingSkills }: SkillsGapAnalysisPr
   const relevantJobRoles = getRelevantJobRoles();
   
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-        Skills Gap Analysis
-      </h2>
+    <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-2xl backdrop-blur-2xl">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-fuchsia-200">Skill Graph</p>
+          <h2 className="mt-2 text-2xl font-bold text-white">Skills Gap Analysis</h2>
+        </div>
+        <Cpu className="text-fuchsia-200" size={30} />
+      </div>
       
       <div className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <h3 className="text-lg font-semibold text-white mb-4">
           Relevant Job Roles
         </h3>
         <div className="flex flex-wrap gap-3">
           {relevantJobRoles.map((role, index) => (
             <div 
               key={index}
-              className="px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg flex items-center"
+              className="flex items-center rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100"
             >
               <Zap size={16} className="mr-2" />
               {role}
@@ -63,8 +66,8 @@ const SkillsGapAnalysis = ({ currentSkills, missingSkills }: SkillsGapAnalysisPr
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-            <span className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400 flex items-center justify-center mr-2 text-xs font-bold">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            <span className="w-6 h-6 rounded-full bg-emerald-300/20 text-emerald-200 flex items-center justify-center mr-2 text-xs font-bold">
               {currentSkills.length}
             </span>
             Your Current Skills
@@ -73,7 +76,7 @@ const SkillsGapAnalysis = ({ currentSkills, missingSkills }: SkillsGapAnalysisPr
             {currentSkills.map((skill, index) => (
               <span
                 key={index}
-                className="px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 rounded-full text-sm"
+                className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-sm text-emerald-100"
               >
                 {skill}
               </span>
@@ -82,8 +85,8 @@ const SkillsGapAnalysis = ({ currentSkills, missingSkills }: SkillsGapAnalysisPr
         </div>
         
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-            <span className="w-6 h-6 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-600 dark:text-yellow-400 flex items-center justify-center mr-2 text-xs font-bold">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            <span className="w-6 h-6 rounded-full bg-amber-300/20 text-amber-200 flex items-center justify-center mr-2 text-xs font-bold">
               {missingSkills.length}
             </span>
             Missing Skills
@@ -92,7 +95,7 @@ const SkillsGapAnalysis = ({ currentSkills, missingSkills }: SkillsGapAnalysisPr
             {missingSkills.map((skill, index) => (
               <span
                 key={index}
-                className="px-3 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 rounded-full text-sm"
+                className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-sm text-amber-100"
               >
                 {skill}
               </span>
@@ -101,14 +104,14 @@ const SkillsGapAnalysis = ({ currentSkills, missingSkills }: SkillsGapAnalysisPr
         </div>
       </div>
       
-      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+      <div className="rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 mb-6">
         <div className="flex items-start">
           <AlertTriangle size={20} className="text-yellow-500 mt-0.5 mr-3 flex-shrink-0" />
           <div>
-            <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-1">
+            <h4 className="text-md font-medium text-amber-100 mb-1">
               Skills Gap Summary
             </h4>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
+            <p className="text-amber-50/75 text-sm">
               Based on our analysis, you're missing several key skills that are frequently requested in job postings for {relevantJobRoles[0]}s. Adding these skills to your resume could increase your chances of getting past ATS systems and securing interviews.
             </p>
           </div>
@@ -116,19 +119,19 @@ const SkillsGapAnalysis = ({ currentSkills, missingSkills }: SkillsGapAnalysisPr
       </div>
       
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg font-semibold text-white mb-4">
           Industry Demand
         </h3>
         <div className="space-y-4">
           {missingSkills.slice(0, 3).map((skill, index) => (
-            <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+            <div key={index} className="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
               <div className="flex justify-between items-center mb-2">
-                <p className="font-medium text-gray-800 dark:text-gray-200">{skill}</p>
-                <div className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-xs">
+                <p className="font-medium text-white">{skill}</p>
+                <div className="rounded-full bg-cyan-300/10 px-2 py-1 text-xs text-cyan-100">
                   High Demand
                 </div>
               </div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-slate-400 text-sm">
                 {skill === 'TypeScript' && 'TypeScript is increasingly required for frontend and full-stack roles, with 68% of job postings mentioning it.'}
                 {skill === 'Docker' && 'Docker appears in 72% of DevOps and backend developer job descriptions.'}
                 {skill === 'AWS' && 'Cloud skills, especially AWS, are mentioned in 81% of senior developer positions.'}

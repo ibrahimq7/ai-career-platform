@@ -12,6 +12,7 @@ from .projects import extract_projects
 #__________________________Main function___________________________________
 
 def parse_resume(filename, file_bytes):
+    filename = filename.lower()
     if filename.endswith(".pdf"):
         raw_text = extract_text_from_pdf(file_bytes)
         sections = extract_sections(raw_text)
@@ -51,20 +52,16 @@ def parse_resume(filename, file_bytes):
     #     if not experience:
     #         experience = extract_experience_blocks_flexible(raw_text)
 
-        print("Trying: extract_experience_from_docx_tables")
         experience = extract_experience_from_docx_tables(file_bytes)
 
         if not experience:
-            print("Fallback to: extract_experience_block_from_sections + clean_experience_block")
             exp_block = extract_experience_block_from_sections(sections)
             experience = clean_experience_block(exp_block)
 
         if not experience:
-            print("Fallback to: extract_experience_blocks_flexible")
             experience = extract_experience_blocks_flexible(raw_text)
-
-        if not experience:
-            print("Failed to extract experience from any method.")
+    else:
+        raise ValueError("Unsupported resume format")
 
 
 
@@ -79,7 +76,7 @@ def parse_resume(filename, file_bytes):
     # education = extract_education(raw_text)
     # experience = extract_experience(raw_text)
     
-    projects = extract_projects(sections)
+    projects = extract_projects(sections, raw_text)
     
 
     return {

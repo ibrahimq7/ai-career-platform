@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FileText, Code, BarChart, Trophy, Book } from 'lucide-react';
+import { FileText, Code, BarChart, Trophy } from 'lucide-react';
 import FeatureCard from '../components/common/FeatureCard';
 import TestimonialCard from '../components/common/TestimonialCard';
 
@@ -36,7 +36,7 @@ const HomePage = () => {
       name: 'Sarah Johnson',
       role: 'Software Engineer at Google',
       image: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      content: 'CareerBoost helped me identify gaps in my resume and improve my coding skills. I landed my dream job within 2 months!'
+      content: 'AI Career Platform helped me identify gaps in my resume and improve my coding skills. I landed my dream job within 2 months!'
     },
     {
       name: 'Michael Chen',
@@ -115,7 +115,7 @@ const HomePage = () => {
       <section className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
-            How CareerBoost Works
+            How AI Career Platform Works
           </h2>
           <div className="flex flex-col md:flex-row justify-center items-center md:space-x-8">
             <div className="md:w-1/2 mb-10 md:mb-0">

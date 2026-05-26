@@ -1,263 +1,179 @@
-import { CircleDashed } from 'lucide-react';
-
-type ResumeData = {
-  name: string;
-  email: string;
-  phone: string;
-  education: Array<{
-    institution: string;
-    degree: string;
-    date: string;
-  }>;
-  experience: Array<{
-    company: string;
-    role: string;
-    duration: string;
-    description: string[];
-  }>;
-  skills: string[];
-  projects: Array<{
-    name: string;
-    description: string;
-  }>;
-};
+import type { ReactNode } from 'react';
+import { Activity, Briefcase, FileText, ShieldCheck, UserRound } from 'lucide-react';
+import { AtsCategory, ResumeData } from '../../types';
 
 type ResumeAnalyzerProps = {
   resumeData: ResumeData;
   atsScore: number;
+  scoreBreakdown: AtsCategory[];
 };
 
-const ResumeAnalyzer = ({ resumeData, atsScore }: ResumeAnalyzerProps) => {
-  // Generate improvement tips based on ATS score
-  const getImprovementTips = () => {
-    if (atsScore >= 90) {
-      return [
-        'Your resume is excellent and well-optimized for ATS systems.',
-        'Consider tailoring it slightly for specific job applications.',
-        'Add more measurable achievements to stand out even more.'
-      ];
-    } else if (atsScore >= 70) {
-      return [
-        'Use more keywords from the job description.',
-        'Quantify your achievements with specific metrics and numbers.',
-        'Ensure your resume has a clean, consistent format.',
-        'Add more relevant skills to your skills section.'
-      ];
-    } else {
-      return [
-        'Restructure your resume to follow a standard format.',
-        'Add more industry-specific keywords throughout your resume.',
-        'Quantify your achievements with specific metrics.',
-        'Remove graphics, tables, and unusual formatting.',
-        'Use bullet points instead of paragraphs for better readability.',
-        'Include a professional summary at the top of your resume.'
-      ];
-    }
-  };
-  
-  const improvementTips = getImprovementTips();
-  
-  // Determine score color based on ATS score
-  const getScoreColor = () => {
-    if (atsScore >= 90) return 'text-green-600 dark:text-green-400';
-    if (atsScore >= 70) return 'text-yellow-600 dark:text-yellow-400';
-    return 'text-red-600 dark:text-red-400';
-  };
-  
-  // Determine background color based on ATS score
-  const getScoreBackgroundColor = () => {
-    if (atsScore >= 90) return 'bg-green-100 dark:bg-green-900/30';
-    if (atsScore >= 70) return 'bg-yellow-100 dark:bg-yellow-900/30';
-    return 'bg-red-100 dark:bg-red-900/30';
-  };
-  
+const ResumeAnalyzer = ({ resumeData, atsScore, scoreBreakdown }: ResumeAnalyzerProps) => {
+  const scoreColor = atsScore >= 80 ? '#22c55e' : atsScore >= 60 ? '#facc15' : '#fb7185';
+  const projectCount = resumeData.projects.length;
+  const experienceLines = resumeData.experience.split('\n').filter(Boolean).length;
+  const visibleSkills = resumeData.skills.slice(0, 36);
+  const extraSkillCount = Math.max(resumeData.skills.length - visibleSkills.length, 0);
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-        Resume Analysis Results
-      </h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-          <h3 className="text-sm uppercase font-semibold text-gray-500 dark:text-gray-400 mb-2">
-            ATS Score
-          </h3>
-          <div className="flex items-center space-x-3">
-            <div className={`text-3xl font-bold ${getScoreColor()}`}>
-              {atsScore}
-            </div>
-            <div className="flex items-center space-x-1">
-              <div 
-                className={`h-2.5 rounded-full ${
-                  atsScore >= 20 ? getScoreBackgroundColor() : 'bg-gray-200 dark:bg-gray-600'
-                }`} 
-                style={{ width: '20px' }}
-              />
-              <div 
-                className={`h-2.5 rounded-full ${
-                  atsScore >= 40 ? getScoreBackgroundColor() : 'bg-gray-200 dark:bg-gray-600'
-                }`} 
-                style={{ width: '20px' }}
-              />
-              <div 
-                className={`h-2.5 rounded-full ${
-                  atsScore >= 60 ? getScoreBackgroundColor() : 'bg-gray-200 dark:bg-gray-600'
-                }`} 
-                style={{ width: '20px' }}
-              />
-              <div 
-                className={`h-2.5 rounded-full ${
-                  atsScore >= 80 ? getScoreBackgroundColor() : 'bg-gray-200 dark:bg-gray-600'
-                }`} 
-                style={{ width: '20px' }}
-              />
-              <div 
-                className={`h-2.5 rounded-full ${
-                  atsScore >= 100 ? getScoreBackgroundColor() : 'bg-gray-200 dark:bg-gray-600'
-                }`} 
-                style={{ width: '20px' }}
-              />
-            </div>
-          </div>
+    <section className="rounded-3xl border border-white/10 bg-white/[0.07] p-6 shadow-2xl backdrop-blur-2xl md:p-8">
+      <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-200">Recruiter Grade Report</p>
+          <h2 className="mt-2 text-2xl font-black text-white md:text-3xl">Resume Intelligence Results</h2>
         </div>
-        
-        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-          <h3 className="text-sm uppercase font-semibold text-gray-500 dark:text-gray-400 mb-2">
-            Skills Detected
-          </h3>
-          <div className="text-xl font-bold text-gray-900 dark:text-white">
-            {resumeData.skills.length}
-          </div>
-        </div>
-        
-        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-          <h3 className="text-sm uppercase font-semibold text-gray-500 dark:text-gray-400 mb-2">
-            Experience
-          </h3>
-          <div className="text-xl font-bold text-gray-900 dark:text-white">
-            {resumeData.experience.length} roles
-          </div>
+        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-4 py-2 text-sm font-semibold text-emerald-100">
+          <ShieldCheck size={17} />
+          ATS-ready analysis
         </div>
       </div>
-      
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Improvement Suggestions
-        </h3>
-        <ul className="space-y-2">
-          {improvementTips.map((tip, index) => (
-            <li key={index} className="flex items-start">
-              <CircleDashed size={16} className="text-blue-500 mt-1 mr-2 flex-shrink-0" />
-              <span className="text-gray-700 dark:text-gray-300">{tip}</span>
-            </li>
+
+      <div className="grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
+        <div className="rounded-3xl border border-white/10 bg-slate-950/65 p-6">
+          <div
+            className="mx-auto grid h-56 w-56 place-items-center rounded-full"
+            style={{
+              background: `conic-gradient(${scoreColor} ${atsScore * 3.6}deg, rgba(255,255,255,0.08) 0deg)`,
+              boxShadow: `0 0 55px ${scoreColor}42`,
+            }}
+          >
+            <div className="grid h-44 w-44 place-items-center rounded-full bg-slate-950 text-center">
+              <div>
+                <p className="text-6xl font-black text-white">{atsScore}</p>
+                <p className="text-xs uppercase tracking-[0.28em] text-slate-400">ATS Score</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 grid grid-cols-3 gap-3 text-center">
+            <Metric value={resumeData.skills.length} label="Skills" />
+            <Metric value={projectCount} label="Projects" />
+            <Metric value={experienceLines} label="Signals" />
+          </div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {scoreBreakdown.map((item) => (
+            <div key={item.name} className="rounded-2xl border border-white/10 bg-slate-950/45 p-4">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <p className="text-sm font-bold text-white">{item.name}</p>
+                <span className="rounded-full bg-cyan-300/10 px-2.5 py-1 text-xs font-black text-cyan-100">{item.score}%</span>
+              </div>
+              <div className="h-2.5 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-emerald-300" style={{ width: `${item.score}%` }} />
+              </div>
+              {item.matches.length > 0 && (
+                <p className="mt-3 line-clamp-2 text-xs leading-5 text-slate-400">Matched: {item.matches.join(', ')}</p>
+              )}
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
-      
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Parsed Resume Data
-        </h3>
-        
-        <div className="space-y-6">
-          <div>
-            <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-2">
-              Contact Information
-            </h4>
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-              <p className="text-gray-700 dark:text-gray-300 mb-1">
-                <span className="font-semibold">Name:</span> {resumeData.name}
-              </p>
-              <p className="text-gray-700 dark:text-gray-300 mb-1">
-                <span className="font-semibold">Email:</span> {resumeData.email}
-              </p>
-              <p className="text-gray-700 dark:text-gray-300">
-                <span className="font-semibold">Phone:</span> {resumeData.phone}
-              </p>
-            </div>
+
+      <div className="mt-6 rounded-3xl border border-white/10 bg-slate-950/45 p-6 md:p-7">
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <h3 className="flex items-center gap-2 text-2xl font-black text-white">
+            <Activity size={20} className="text-emerald-200" />
+            Parsed Resume Details
+          </h3>
+          <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-100">
+            Structured extraction
+          </span>
+        </div>
+
+        <div className="grid gap-4 text-base md:grid-cols-4">
+          <Info label="Name" value={resumeData.name} />
+          <Info label="Email" value={resumeData.email} />
+          <Info label="Phone" value={resumeData.phone} />
+          <Info label="Resume Profile" value={resumeData.inferred_role || 'Not detected'} icon={<Briefcase size={15} />} />
+        </div>
+
+        <div className="mt-6">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <p className="flex items-center gap-2 text-base font-black text-white">
+              <UserRound size={18} className="text-cyan-200" />
+              Detected Skills
+            </p>
+            <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-100">
+              {resumeData.skills.length} total
+            </span>
           </div>
-          
-          <div>
-            <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-2">
-              Skills
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {resumeData.skills.map((skill, index) => (
-                <span 
-                  key={index}
-                  className="px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full text-sm"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-2.5">
+            {visibleSkills.map((skill) => (
+              <span key={skill} className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm font-bold text-cyan-100">
+                {skill}
+              </span>
+            ))}
+            {extraSkillCount > 0 && (
+                <span className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-slate-300">
+                +{extraSkillCount} more
+              </span>
+            )}
           </div>
-          
-          <div>
-            <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-2">
-              Education
-            </h4>
-            <div className="space-y-4">
-              {resumeData.education.map((edu, index) => (
-                <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                  <p className="text-gray-900 dark:text-white font-medium">{edu.institution}</p>
-                  <p className="text-gray-700 dark:text-gray-300">{edu.degree}</p>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">{edu.date}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-2">
-              Experience
-            </h4>
-            <div className="space-y-4">
-              {resumeData.experience.map((exp, index) => (
-                <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                  <div className="flex justify-between mb-1">
-                    <p className="text-gray-900 dark:text-white font-medium">{exp.company}</p>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">{exp.duration}</p>
-                  </div>
-                  <p className="text-gray-700 dark:text-gray-300 mb-2">{exp.role}</p>
-                  <ul className="space-y-1 list-disc pl-5">
-                    {exp.description.map((desc, i) => (
-                      <li key={i} className="text-gray-600 dark:text-gray-400 text-sm">
-                        {desc}
-                      </li>
+        </div>
+
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          <TextBlock title="Education" value={resumeData.education} />
+          <TextBlock title="Experience" value={resumeData.experience} />
+        </div>
+
+        <div className="mt-6">
+          <p className="mb-3 flex items-center gap-2 text-base font-black text-white">
+            <FileText size={18} className="text-fuchsia-200" />
+            Projects
+          </p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {resumeData.projects.length ? resumeData.projects.map((project) => (
+              <div key={project.name} className="rounded-2xl border border-white/10 bg-white/[0.05] p-5">
+                <p className="text-lg font-black text-white">{project.name}</p>
+                <p className="mt-2 text-base leading-7 text-slate-400">{project.description || 'No description detected.'}</p>
+                {'technologies' in project && Array.isArray(project.technologies) && project.technologies.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {project.technologies.map((tech) => (
+                      <span key={tech} className="rounded-full border border-fuchsia-300/20 bg-fuchsia-300/10 px-2.5 py-1 text-xs font-semibold text-fuchsia-100">
+                        {tech}
+                      </span>
                     ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 mb-2">
-              Projects
-            </h4>
-            <div className="space-y-4">
-              {resumeData.projects.map((project, index) => (
-                <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                  <p className="text-gray-900 dark:text-white font-medium mb-1">{project.name}</p>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">{project.description}</p>
-                </div>
-              ))}
-            </div>
+                  </div>
+                )}
+                {project.link && (
+                  <a href={project.link} target="_blank" rel="noreferrer" className="mt-3 inline-flex text-sm font-semibold text-cyan-200 hover:text-white">
+                    Open project link
+                  </a>
+                )}
+              </div>
+            )) : <p className="text-sm text-slate-500">No projects detected.</p>}
           </div>
         </div>
       </div>
-      
-      <div className="flex justify-center">
-        <button
-          type="button"
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-        >
-          Download Detailed Report
-        </button>
-      </div>
-    </div>
+    </section>
   );
 };
+
+const Metric = ({ value, label }: { value: number; label: string }) => (
+  <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-3">
+    <p className="text-2xl font-black text-white">{value}</p>
+    <p className="mt-1 text-xs font-medium text-slate-500">{label}</p>
+  </div>
+);
+
+const Info = ({ label, value, icon }: { label: string; value: string; icon?: ReactNode }) => (
+  <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
+    <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+      {icon}
+      {label}
+    </p>
+    <p className="mt-2 break-words text-base font-bold text-slate-200">{value || 'Not detected'}</p>
+  </div>
+);
+
+const TextBlock = ({ title, value }: { title: string; value: string }) => (
+  <div>
+    <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{title}</p>
+    <pre className="max-h-96 overflow-auto whitespace-pre-wrap rounded-2xl border border-white/10 bg-slate-950/50 p-5 font-sans text-base leading-7 text-slate-300">
+      {value || 'Not detected'}
+    </pre>
+  </div>
+);
 
 export default ResumeAnalyzer;

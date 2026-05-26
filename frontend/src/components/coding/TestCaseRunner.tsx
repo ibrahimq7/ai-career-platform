@@ -105,6 +105,9 @@ const TestCaseRunner = ({ problem, code, language }: TestCaseRunnerProps) => {
             Test Cases
           </h3>
           <div className="flex space-x-2">
+            <span className="rounded bg-gray-100 px-2 py-1 text-xs font-semibold uppercase text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+              {language}
+            </span>
             <button
               onClick={runCode}
               disabled={isRunning}

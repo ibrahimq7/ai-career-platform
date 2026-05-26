@@ -1,8 +1,8 @@
-import { useRef, useState, DragEvent, ChangeEvent } from 'react';
-import { Upload, FileText, X, Loader } from 'lucide-react';
+import { useRef, useState, DragEvent, ChangeEvent, KeyboardEvent } from 'react';
+import { Upload, FileText, X, Loader, ScanLine } from 'lucide-react';
 
 type ResumeUploaderProps = {
-  onFileUpload: (file: File) => void;
+  onFileUpload: (file: File | null) => void;
   onAnalyze: () => void;
   file: File | null;
   isAnalyzing: boolean;
@@ -43,6 +43,13 @@ const ResumeUploader = ({ onFileUpload, onAnalyze, file, isAnalyzing }: ResumeUp
       fileInputRef.current.click();
     }
   };
+
+  const handleDropZoneKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleBrowseClick();
+    }
+  };
   
   const validateAndUploadFile = (file: File) => {
     const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
@@ -62,20 +69,24 @@ const ResumeUploader = ({ onFileUpload, onAnalyze, file, isAnalyzing }: ResumeUp
   };
   
   const handleRemoveFile = () => {
-    onFileUpload(null as unknown as File);
+    onFileUpload(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
   
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div
-        className={`border-2 border-dashed rounded-lg p-6 text-center ${
+        className={`relative overflow-hidden rounded-2xl border p-8 text-center backdrop-blur-2xl transition-all duration-300 ${
           isDragging
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-            : 'border-gray-300 dark:border-gray-600'
-        } transition-colors duration-200`}
+            ? 'border-cyan-300 bg-cyan-400/10 shadow-[0_0_40px_rgba(34,211,238,0.25)]'
+            : 'border-white/10 bg-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]'
+        } cursor-pointer hover:border-cyan-300/45 hover:bg-white/[0.09]`}
+        role="button"
+        tabIndex={0}
+        onClick={handleBrowseClick}
+        onKeyDown={handleDropZoneKeyDown}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -90,42 +101,48 @@ const ResumeUploader = ({ onFileUpload, onAnalyze, file, isAnalyzing }: ResumeUp
         
         {!file ? (
           <div className="space-y-4">
-            <div className="flex justify-center">
-              <Upload size={48} className="text-gray-400 dark:text-gray-500" />
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan-300/30 bg-cyan-300/10 shadow-[0_0_35px_rgba(34,211,238,0.2)]">
+              <Upload size={34} className="text-cyan-200" />
             </div>
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-slate-200">
               Drag and drop your resume here, or{' '}
               <button
                 type="button"
-                onClick={handleBrowseClick}
-                className="text-blue-600 dark:text-blue-400 hover:underline"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleBrowseClick();
+                }}
+                className="font-semibold text-cyan-200 hover:text-white"
               >
                 browse for a file
               </button>
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-slate-400">
               Supports: PDF, DOCX (Max 5MB)
             </p>
           </div>
         ) : (
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                <FileText size={24} className="text-blue-600 dark:text-blue-400" />
+              <div className="rounded-xl border border-fuchsia-300/30 bg-fuchsia-400/10 p-3">
+                <FileText size={24} className="text-fuchsia-200" />
               </div>
               <div className="text-left">
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                <p className="text-sm font-medium text-slate-100">
                   {file.name}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-slate-400">
                   {(file.size / 1024 / 1024).toFixed(2)} MB
                 </p>
               </div>
             </div>
             <button
               type="button"
-              onClick={handleRemoveFile}
-              className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+              onClick={(event) => {
+                event.stopPropagation();
+                handleRemoveFile();
+              }}
+              className="rounded-full p-2 text-slate-400 hover:bg-white/10 hover:text-white"
               aria-label="Remove file"
             >
               <X size={18} />
@@ -139,20 +156,20 @@ const ResumeUploader = ({ onFileUpload, onAnalyze, file, isAnalyzing }: ResumeUp
           type="button"
           onClick={onAnalyze}
           disabled={!file || isAnalyzing}
-          className={`px-6 py-2 rounded-lg font-medium flex items-center space-x-2 ${
+          className={`flex items-center space-x-2 rounded-full px-7 py-3 text-sm font-semibold transition-all ${
             !file || isAnalyzing
-              ? 'bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors'
+              ? 'cursor-not-allowed bg-white/10 text-slate-500'
+              : 'bg-cyan-300 text-slate-950 shadow-[0_0_30px_rgba(34,211,238,0.35)] hover:-translate-y-0.5 hover:bg-white'
           }`}
         >
           {isAnalyzing ? (
             <>
               <Loader size={18} className="animate-spin" />
-              <span>Analyzing...</span>
+              <span>Scanning Resume</span>
             </>
           ) : (
             <>
-              <FileText size={18} />
+              <ScanLine size={18} />
               <span>Analyze Resume</span>
             </>
           )}

@@ -19,7 +19,7 @@ const CodeEditor = ({ code, setCode, language }: CodeEditorProps) => {
   }, [code]);
   
   return (
-    <div className="relative h-[calc(50vh-120px)] overflow-hidden">
+    <div className="relative h-[calc(50vh-120px)] overflow-hidden" data-language={language}>
       <div className="flex h-full">
         <div className="bg-gray-50 dark:bg-gray-900 text-gray-400 dark:text-gray-500 py-2 pl-2 pr-3 text-right font-mono text-sm select-none border-r border-gray-200 dark:border-gray-700">
           {lineNumbers.map((num, i) => (

@@ -1,149 +1,140 @@
 import { useState } from 'react';
+import { AlertCircle, BrainCircuit, Target } from 'lucide-react';
 import ResumeUploader from '../../components/resume/ResumeUploader';
 import ResumeAnalyzer from '../../components/resume/ResumeAnalyzer';
 import SkillsGapAnalysis from '../../components/resume/SkillsGapAnalysis';
 import CourseRecommendations from '../../components/resume/CourseRecommendations';
-
-type ResumeData = {
-  name: string;
-  email: string;
-  phone: string;
-  education: Array<{
-    institution: string;
-    degree: string;
-    date: string;
-  }>;
-  experience: Array<{
-    company: string;
-    role: string;
-    duration: string;
-    description: string[];
-  }>;
-  skills: string[];
-  projects: Array<{
-    name: string;
-    description: string;
-  }>;
-};
+import AiEnhancementPanel from '../../components/resume/AiEnhancementPanel';
+import { saveResumeAnalysis } from '../../lib/careerData';
+import { analyzeResume } from '../../lib/resumeApi';
+import { ResumeAnalysisResponse } from '../../types';
 
 const ResumePage = () => {
   const [file, setFile] = useState<File | null>(null);
+  const [targetRole, setTargetRole] = useState('full stack developer');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analyzeComplete, setAnalyzeComplete] = useState(false);
-  const [atsScore, setAtsScore] = useState(0);
-  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
-  const [missingSkills, setMissingSkills] = useState<string[]>([]);
+  const [analysis, setAnalysis] = useState<ResumeAnalysisResponse | null>(null);
+  const useAi = true;
+  const [error, setError] = useState('');
+  const [saveStatus, setSaveStatus] = useState('');
   
-  const handleFileUpload = (uploadedFile: File) => {
+  const handleFileUpload = (uploadedFile: File | null) => {
     setFile(uploadedFile);
-    setAnalyzeComplete(false);
+    setAnalysis(null);
+    setError('');
+    setSaveStatus('');
   };
   
-  const handleAnalyzeResume = () => {
+  const handleAnalyzeResume = async () => {
     if (!file) return;
-    
     setIsAnalyzing(true);
-    
-    // Simulate API call to analyze resume
-    setTimeout(() => {
-      // Mock resume data
-      const mockResumeData: ResumeData = {
-        name: 'John Smith',
-        email: 'john.smith@example.com',
-        phone: '(123) 456-7890',
-        education: [
-          {
-            institution: 'Stanford University',
-            degree: 'Master of Computer Science',
-            date: '2018 - 2020'
-          },
-          {
-            institution: 'University of California, Berkeley',
-            degree: 'Bachelor of Science in Computer Science',
-            date: '2014 - 2018'
-          }
-        ],
-        experience: [
-          {
-            company: 'Tech Innovations Inc.',
-            role: 'Software Engineer',
-            duration: 'Jan 2020 - Present',
-            description: [
-              'Developed and maintained RESTful APIs using Node.js and Express',
-              'Implemented frontend features using React and Redux',
-              'Collaborated with cross-functional teams to deliver products on schedule'
-            ]
-          },
-          {
-            company: 'Digital Solutions LLC',
-            role: 'Frontend Developer Intern',
-            duration: 'May 2019 - Aug 2019',
-            description: [
-              'Created responsive UI components with React',
-              'Participated in code reviews and testing',
-              'Optimized website performance and load times'
-            ]
-          }
-        ],
-        skills: ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'Git'],
-        projects: [
-          {
-            name: 'E-commerce Platform',
-            description: 'Built a fully functional e-commerce platform with React, Node.js, and MongoDB'
-          },
-          {
-            name: 'Weather Forecasting App',
-            description: 'Developed a weather forecasting application using OpenWeatherMap API and React Native'
-          }
-        ]
-      };
-      
-      // Mock missing skills
-      const mockMissingSkills = ['TypeScript', 'Docker', 'AWS', 'CI/CD', 'GraphQL'];
-      
-      // Mock ATS score (0-100)
-      const mockScore = 72;
-      
-      setResumeData(mockResumeData);
-      setMissingSkills(mockMissingSkills);
-      setAtsScore(mockScore);
+    setError('');
+    setSaveStatus('');
+
+    try {
+      const result = await analyzeResume(file, targetRole, useAi);
+      setAnalysis(result);
       setIsAnalyzing(false);
-      setAnalyzeComplete(true);
-    }, 3000);
+      setSaveStatus('Saving report to your workspace...');
+      void (async () => {
+        try {
+          const persistence = await saveResumeAnalysis(file, result);
+          if (persistence.saved) {
+            const warningText = persistence.warnings?.length ? ` ${persistence.warnings.join(' ')}` : '';
+            setSaveStatus(`Report saved to your Supabase workspace.${warningText}`);
+          } else {
+            setSaveStatus(`Report generated, but workspace save needs attention: ${persistence.reason || 'Unknown Supabase error.'}`);
+          }
+        } catch {
+          setSaveStatus('Report generated, but workspace save failed unexpectedly. Check Supabase schema, RLS policies, and env values.');
+        }
+      })();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Resume analysis failed.');
+      setIsAnalyzing(false);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
   
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6">
-          Resume Analyzer
-        </h1>
-        <p className="text-gray-600 dark:text-gray-300 mb-6">
-          Upload your resume to get an ATS score, personalized feedback, and recommendations to improve your job application.
-        </p>
+    <div className="relative mx-auto max-w-7xl">
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_10%_10%,rgba(34,211,238,0.2),transparent_28%),radial-gradient(circle_at_90%_20%,rgba(217,70,239,0.18),transparent_25%),radial-gradient(circle_at_50%_90%,rgba(16,185,129,0.14),transparent_30%)]" />
+
+      <div className="mb-6 overflow-hidden rounded-3xl border border-white/10 bg-slate-950/80 p-5 shadow-2xl backdrop-blur-2xl md:p-6">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_410px] lg:items-center">
+          <div>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">
+              <BrainCircuit size={14} />
+              Hybrid Resume Intelligence
+            </div>
+            <h1 className="max-w-2xl text-2xl font-black tracking-tight text-white md:text-4xl">
+              Resume Analyzer
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
+              Upload a PDF or DOCX resume for a fast ATS score, structured parsing, skill gaps, and recruiter-grade recommendations.
+            </p>
+            <div className="mt-5 max-w-sm">
+              <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-300">
+                <Target size={16} className="text-cyan-200" />
+                Target Role
+              </label>
+              <select
+                value={targetRole}
+                onChange={(event) => setTargetRole(event.target.value)}
+                className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-300/60"
+              >
+                <option className="bg-slate-950" value="full stack developer">Full Stack Developer</option>
+                <option className="bg-slate-950" value="frontend developer">Frontend Developer</option>
+                <option className="bg-slate-950" value="backend developer">Backend Developer</option>
+                <option className="bg-slate-950" value="data analyst">Data Analyst</option>
+                <option className="bg-slate-950" value="machine learning engineer">Machine Learning Engineer</option>
+              </select>
+            </div>
+            <p className="mt-2 max-w-sm text-xs leading-5 text-slate-500">
+              The backend parses locally first, then sends optimized structured JSON for semantic guidance.
+            </p>
+          </div>
+
+          <ResumeUploader
+            onFileUpload={handleFileUpload}
+            onAnalyze={handleAnalyzeResume}
+            file={file}
+            isAnalyzing={isAnalyzing}
+          />
+        </div>
         
-        <ResumeUploader 
-          onFileUpload={handleFileUpload} 
-          onAnalyze={handleAnalyzeResume}
-          file={file}
-          isAnalyzing={isAnalyzing}
-        />
+        {error && (
+          <div className="mt-5 flex items-start gap-3 rounded-2xl border border-rose-300/20 bg-rose-400/10 p-4 text-sm text-rose-100">
+            <AlertCircle size={18} className="mt-0.5 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+        {saveStatus && !error && (
+          <div className="mt-5 rounded-2xl border border-emerald-300/20 bg-emerald-300/10 p-4 text-sm text-emerald-100">
+            {saveStatus}
+          </div>
+        )}
       </div>
       
-      {analyzeComplete && resumeData && (
+      {analysis && (
         <div className="space-y-6">
           <ResumeAnalyzer 
-            resumeData={resumeData}
-            atsScore={atsScore}
+            resumeData={analysis.parsed_resume}
+            atsScore={analysis.ats_score}
+            scoreBreakdown={analysis.score_breakdown}
           />
+
+          <AiEnhancementPanel enhancement={analysis.ai_enhancement} />
           
           <SkillsGapAnalysis 
-            currentSkills={resumeData.skills}
-            missingSkills={missingSkills}
+            currentSkills={analysis.parsed_resume.skills}
+            missingSkills={analysis.missing_skills}
           />
           
           <CourseRecommendations 
-            missingSkills={missingSkills}
+            missingSkills={analysis.missing_skills}
+            recommendations={analysis.course_recommendations}
           />
         </div>
       )}
